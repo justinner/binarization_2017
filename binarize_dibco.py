@@ -33,11 +33,11 @@ BOTTOM_EDGE = 2
 
 def relative_darkness(im, window_size=5, threshold=10):
 	if im.ndim == 3:
-		im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+		im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)   #将输入图片进行颜色空间的转换BGR〉=GRAY
 
 	# find number of pixels at least $threshold less than the center value
 	def below_thresh(vals):
-		center_val = vals[vals.shape[0]/2]
+		center_val = vals[vals.shape[0]/2]#vals是啥
 		lower_thresh = center_val - threshold
 		return (vals < lower_thresh).sum()
 
@@ -62,7 +62,7 @@ def relative_darkness(im, window_size=5, threshold=10):
 	middle = middle * (255 / (window_size * window_size))
 	upper = upper * (255 / (window_size * window_size))
 
-	return np.concatenate( [lower[:,:,np.newaxis], middle[:,:,np.newaxis], upper[:,:,np.newaxis]], axis=2)
+	return np.concatenate( [lower[:,:,np.newaxis], middle[:,:,np.newaxis], upper[:,:,np.newaxis]], axis=2)#连接作用还不是很懂
 	
 
 def setup_network(weight_file):
@@ -72,7 +72,7 @@ def setup_network(weight_file):
 def fprop(network, ims, batchsize=BATCH_SIZE):
 	# batch up all transforms at once
 	idx = 0
-	responses = list()
+	responses = list()#创建一个空列表
 	while idx < len(ims):
 		sub_ims = ims[idx:idx+batchsize]
 
@@ -88,8 +88,8 @@ def fprop(network, ims, batchsize=BATCH_SIZE):
 		# propagate on batch
 		network.forward()
 		output = np.copy(network.blobs["prob"].data)
-		responses.append(output)
-		print "Progress %d%%" % int(100 * idx / float(len(ims)))
+		responses.append(output)#将网络运行结果复制一个副本
+		print "Progress %d%%" % int(100 * idx / float(len(ims)))#转义字符
 	return np.concatenate(responses, axis=0)
 
 
@@ -111,7 +111,7 @@ def get_subwindows(im):
 	y = 0
 	y_done = False
 	while y  <= im.shape[0] and not y_done:
-		x = 0
+		x = 0#为什么把x=0放这里
 		if y + height > im.shape[0]:
 			y = im.shape[0] - height
 			y_done = True
@@ -124,7 +124,7 @@ def get_subwindows(im):
 					(y + PADDING_SIZE, x + PADDING_SIZE, y + y_stride, x + x_stride),
 					 TOP_EDGE if y == 0 else (BOTTOM_EDGE if y == (im.shape[0] - height) else MIDDLE),
 					  LEFT_EDGE if x == 0 else (RIGHT_EDGE if x == (im.shape[1] - width) else MIDDLE) 
-			) )
+			) )#这么多括号？
 			ims.append(im[y:y+height,x:x+width,:])
 			x += x_stride
 		y += y_stride
